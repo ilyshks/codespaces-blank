@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "swap.h"
+#include "swap.c"
 
 int main()
 {

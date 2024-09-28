@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "revert_string.h"
+#include "revert_string.c"
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2)
+	if (argc != 2) // check if there is only one argument
 	{
-		printf("Usage: %s string_to_revert\n", argv[0]);
+		printf("Usage: %s string_to_revert\n", argv[0]); // print name
 		return -1;
 	}
 
