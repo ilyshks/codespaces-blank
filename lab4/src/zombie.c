@@ -9,10 +9,10 @@ int main()
 {
     pid_t child_pid;
 
-    // if (signal(SIGCHLD, SIG_IGN) == SIG_ERR) {
-    //     perror("signal");
-    //     return 1;
-    // }
+    if (signal(SIGCHLD, SIG_IGN) == SIG_ERR) {
+        perror("signal");
+        return 1;
+    }
 
     // Создаем дочерний процесс
     child_pid = fork();
