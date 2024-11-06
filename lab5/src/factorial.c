@@ -2,14 +2,17 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <getopt.h>
+#include <semaphore.h>
 
 typedef struct {
     int start;
     int end;
     int mod;
     int *result;
-    pthread_mutex_t *mutex;
+    // pthread_mutex_t *mutex;
 } thread_data_t;
+ 
+sem_t semaphore;
 
 void *compute_factorial_part(void *arg) {
     thread_data_t *data = (thread_data_t *)arg;
@@ -17,16 +20,18 @@ void *compute_factorial_part(void *arg) {
     int end = data->end;
     int mod = data->mod;
     int *result = data->result;
-    pthread_mutex_t *mutex = data->mutex;
+    // pthread_mutex_t *mutex = data->mutex;
 
     int local_result = 1;
     for (int i = start; i <= end; i++) {
         local_result = (local_result * i) % mod;
     }
 
-    pthread_mutex_lock(mutex);
+    // pthread_mutex_lock(mutex);
+    sem_wait(&semaphore);
     *result = (*result * local_result) % mod;
-    pthread_mutex_unlock(mutex);
+    //pthread_mutex_unlock(mutex);
+    sem_post(&semaphore);
 }
 
 int main(int argc, char *argv[]) {
@@ -77,7 +82,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Инициализация мьютекса
-    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    // pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    sem_init(&semaphore, 0, 1);
 
     // Инициализация результата
     int result = 1;
@@ -97,7 +103,7 @@ int main(int argc, char *argv[]) {
         }
         thread_data[i].mod = mod;
         thread_data[i].result = &result;
-        thread_data[i].mutex = &mutex;
+        // thread_data[i].mutex = &mutex;
 
         pthread_create(&threads[i], NULL, compute_factorial_part, &thread_data[i]);
     }
@@ -111,7 +117,9 @@ int main(int argc, char *argv[]) {
     printf("Factorial of %d modulo %d is %d\n", k, mod, result);
 
     // Освобождение ресурсов
-    pthread_mutex_destroy(&mutex);
+    // pthread_mutex_destroy(&mutex);
+
+    sem_destroy(&semaphore);
 
     return 0;
 }
